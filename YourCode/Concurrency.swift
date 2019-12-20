@@ -52,13 +52,31 @@ import Foundation
 ///
 func loadMessage(completion: @escaping (String) -> Void) {
     
-    fetchMessageOne { (messageOne) in
+    var hello = ""
+    var world = ""
+    let queue = DispatchQueue.global()
+    let group = DispatchGroup()
+    let timeoutMessage = "Unable to load message - Time out exceeded"
+    
+    group.enter()
+    queue.async(group: group) {
+        fetchMessageOne { (messageOne) in
+            hello = messageOne
+            group.leave()
+        }
     }
     
-    fetchMessageTwo { (messageTwo) in
+    group.enter()
+    queue.async(group: group) {
+        fetchMessageTwo { (messageTwo) in
+            world = messageTwo
+            group.leave()
+        }
     }
+    
+    group.wait()
     
     /// The completion handler that should be called with the joined messages from fetchMessageOne & fetchMessageTwo
     /// Please delete this comment before submission.
-    completion("Good morning!")
+    completion("\(hello) \(world)!")
 }
