@@ -57,6 +57,7 @@ func loadMessage(completion: @escaping (String) -> Void) {
     let queue = DispatchQueue.global()
     let group = DispatchGroup()
     let timeoutMessage = "Unable to load message - Time out exceeded"
+    let timeout = DispatchTimeInterval.seconds(2)
     
     group.enter()
     queue.async(group: group) {
@@ -74,9 +75,11 @@ func loadMessage(completion: @escaping (String) -> Void) {
         }
     }
     
-    group.wait()
+    let timeoutResult = group.wait(timeout: .now() + timeout)
+    let loadedMessage = timeoutResult == .success ? "\(hello) \(world)!" : timeoutMessage
+    
     
     /// The completion handler that should be called with the joined messages from fetchMessageOne & fetchMessageTwo
     /// Please delete this comment before submission.
-    completion("\(hello) \(world)!")
+    completion(loadedMessage)
 }
