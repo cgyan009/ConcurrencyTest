@@ -23,5 +23,19 @@ class ConcurrencyTests: XCTestCase {
          }
          wait(for: [expectation], timeout: 10.0)
      }
+    
+    func testloadMessageTimeout() {
+        let expectation = XCTestExpectation(description: "Load message timeout")
+        //make sure timeout is shorter than minum loading time
+        let loadingTimeout = DispatchTimeInterval.milliseconds(200)
+        
+        loadGreetingMessage(timeout: loadingTimeout) { (message) in
+            XCTAssertNotNil(message)
+            XCTAssert(message != self.successfulGreetingMessage)
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 10.0)
+    }
 
 }
