@@ -50,32 +50,31 @@ import Foundation
 /// * Code readability & matching apple naming guidelines
 /// * Showing work through git history
 ///
-func loadMessage(completion: @escaping (String) -> Void) {
+func loadGreetingMessage(completion: @escaping (String) -> Void) {
     
     var hello = ""
     var world = ""
-    let queue = DispatchQueue.global()
-    let group = DispatchGroup()
+    let dispatchQueue = DispatchQueue.global()
+    let dispatchGroup = DispatchGroup()
     let timeoutMessage = "Unable to load message - Time out exceeded"
     let timeout = DispatchTimeInterval.seconds(2)
     
-    group.enter()
-    queue.async(group: group) {
-        fetchMessageOne { (messageOne) in
-            hello = messageOne
-            group.leave()
+    dispatchGroup.enter()
+    dispatchQueue.async(group: dispatchGroup) {
+        fetchMessageOne { (messageHello) in
+            hello = messageHello
+            dispatchGroup.leave()
+        }
+    }
+    dispatchGroup.enter()
+    dispatchQueue.async(group: dispatchGroup) {
+        fetchMessageTwo { (messageWorld) in
+            world = messageWorld
+            dispatchGroup.leave()
         }
     }
     
-    group.enter()
-    queue.async(group: group) {
-        fetchMessageTwo { (messageTwo) in
-            world = messageTwo
-            group.leave()
-        }
-    }
-    
-    let timeoutResult = group.wait(timeout: .now() + timeout)
+    let timeoutResult = dispatchGroup.wait(timeout: .now() + timeout)
     let loadedMessage = timeoutResult == .success ? "\(hello) \(world)!" : timeoutMessage
     
     

@@ -16,7 +16,7 @@ class ViewController: UIViewController {
         
         label.text = "loading"
         
-        loadMessage { combinedMessage in
+        loadGreetingMessage { combinedMessage in
             self.label.text = combinedMessage
         }
     }
