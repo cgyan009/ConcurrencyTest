@@ -58,27 +58,26 @@ func loadGreetingMessage(timeout: DispatchTimeInterval, completion: @escaping (S
     let dispatchGroup = DispatchGroup()
     let timeoutMessage = "Unable to load message - Time out exceeded"
     
-    
-    dispatchGroup.enter()
-    dispatchQueue.async(group: dispatchGroup) {
-        fetchMessageOne { (messageHello) in
-            hello = messageHello
-            dispatchGroup.leave()
+    DispatchQueue.global(qos: .userInitiated).async {
+        dispatchGroup.enter()
+               dispatchQueue.async(group: dispatchGroup) {
+                   fetchMessageOne { (messageHello) in
+                       hello = messageHello
+                       dispatchGroup.leave()
+                   }
+               }
+               dispatchGroup.enter()
+               dispatchQueue.async(group: dispatchGroup) {
+                   fetchMessageTwo { (messageWorld) in
+                       world = messageWorld
+                       dispatchGroup.leave()
+                   }
+               }
+               
+               let timeoutResult = dispatchGroup.wait(timeout: .now() + timeout)
+               let loadedMessage = timeoutResult == .success ? "\(hello) \(world)!" : timeoutMessage
+        DispatchQueue.main.async {
+            completion(loadedMessage)
         }
     }
-    dispatchGroup.enter()
-    dispatchQueue.async(group: dispatchGroup) {
-        fetchMessageTwo { (messageWorld) in
-            world = messageWorld
-            dispatchGroup.leave()
-        }
-    }
-    
-    let timeoutResult = dispatchGroup.wait(timeout: .now() + timeout)
-    let loadedMessage = timeoutResult == .success ? "\(hello) \(world)!" : timeoutMessage
-    
-    
-    /// The completion handler that should be called with the joined messages from fetchMessageOne & fetchMessageTwo
-    /// Please delete this comment before submission.
-    completion(loadedMessage)
 }
