@@ -50,14 +50,14 @@ import Foundation
 /// * Code readability & matching apple naming guidelines
 /// * Showing work through git history
 ///
-func loadGreetingMessage(completion: @escaping (String) -> Void) {
+func loadGreetingMessage(timeout: DispatchTimeInterval, completion: @escaping (String) -> Void) {
     
     var hello = ""
     var world = ""
     let dispatchQueue = DispatchQueue.global()
     let dispatchGroup = DispatchGroup()
     let timeoutMessage = "Unable to load message - Time out exceeded"
-    let timeout = DispatchTimeInterval.seconds(2)
+    
     
     dispatchGroup.enter()
     dispatchQueue.async(group: dispatchGroup) {

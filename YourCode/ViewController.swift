@@ -15,8 +15,9 @@ class ViewController: UIViewController {
         setupLabel()
         
         label.text = "loading"
+        let timeout = DispatchTimeInterval.seconds(2)
         
-        loadGreetingMessage { combinedMessage in
+        loadGreetingMessage(timeout: timeout) { combinedMessage in
             self.label.text = combinedMessage
         }
     }
